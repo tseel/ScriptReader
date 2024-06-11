@@ -1,19 +1,19 @@
-#include "ScriptFile.h"
+#include "Script.h"
 #include "nlohmann/json.hpp"
 #include <algorithm>
 #include <print>
 #include <fstream>
 #include <ranges>
 
-ScriptFile::ScriptFile(const fs::path filename)
+Script::Script(const fs::path filename)
 {
   nlohmann::json js = nlohmann::json::parse(std::ifstream{filename});
   auto iter = js.cbegin();
-  if (js[0].is_object() && js[0]["id"] == "_meta")
+  if (js[0].is_object() && js[0].contains("id") && js[0]["id"] == "_meta")
   {
     nlohmann::json& meta = js[0];
-    name = meta["name"];
-    author = meta["author"];
+    name = meta.value("name", "");
+    author = meta.value("author", "");
     image = meta.value("image", "");
     ++iter;
   }
@@ -23,7 +23,6 @@ ScriptFile::ScriptFile(const fs::path filename)
     name = filename.stem().string();
   }
 
-  bool oldScriptWarning = false;
   for (; iter != js.cend(); ++iter)
   {
     std::string charId;
@@ -37,11 +36,7 @@ ScriptFile::ScriptFile(const fs::path filename)
       else
       {
         charId = (*iter)["id"];
-        if (!oldScriptWarning)
-        {
-          std::println("{}: Old script format! Recommend using the script tool to update this script to the current format, otherwise some character names might show weirdly!", filename.stem().string());
-        }
-        oldScriptWarning = true;
+        oldFormat = true;
       }
     }
     else if (iter->is_string())
@@ -55,7 +50,7 @@ ScriptFile::ScriptFile(const fs::path filename)
   }
 }
 
-void ScriptFile::Print()
+void Script::Print()
 {
   if (author != "")
   {

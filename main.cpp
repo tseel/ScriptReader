@@ -1,19 +1,21 @@
-#include "ScriptFile.h"
+#include "Script.h"
+#include "ScriptContainer.h"
 #include <filesystem>
 namespace fs = std::filesystem;
 
 int main()
 {
-  fs::path botc = ("C:/Users/Travis/Documents/BOTC");
-  if (!botc.empty())
+  fs::path scriptDir = ("C:/Users/Travis/Documents/BOTC");
+  if (!scriptDir.empty())
   {
-    for (const fs::path& f : fs::directory_iterator(botc))
+    ScriptContainer container;
+    for (const fs::path& f : fs::directory_iterator(scriptDir))
     {
       if (f.extension() == ".json")
       {
-        ScriptFile script(f);
-        //script.Print();
+        container.AddScript({f});
       }
     }
+    container.PrintScriptsWithCharacter("shabaloth");
   }
 }
