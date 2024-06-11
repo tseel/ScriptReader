@@ -12,15 +12,20 @@ class Script
     public:
       Script(const fs::path filename);
       void Print();
-      
-      inline const std::vector<std::string>& GetCharacters() const
-      {
-        return characters;
-      }
 
       inline const std::string& GetName() const
       {
         return name;
+      }
+
+      inline const std::string& GetAuthor() const
+      {
+        return author;
+      }
+
+      inline const std::vector<std::string>& GetCharacters() const
+      {
+        return characters;
       }
 
       bool operator<(const Script rhs) const

@@ -3,7 +3,13 @@
 void ScriptContainer::AddScript(const Script& script)
 {
   scripts.insert(script);
+  GenerateMaps();
+}
+
+void ScriptContainer::GenerateMaps()
+{
   GenerateCharacterMap();
+  GenerateAuthorMap();
 }
 
 void ScriptContainer::GenerateCharacterMap()
@@ -17,3 +23,10 @@ void ScriptContainer::GenerateCharacterMap()
   }
 }
 
+void ScriptContainer::GenerateAuthorMap()
+{
+  for (auto& script : scripts)
+  {
+    authorMap[script.GetAuthor()].insert(&script);
+  }
+}
