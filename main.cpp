@@ -16,14 +16,10 @@ int main()
         container.AddScript({f});
       }
     }
-    auto sivScripts = container.GetScriptsByAuthor("Siv");
-    if (sivScripts)
+    std::println("Characters:");
+    for (const auto& character : container.GetCharacters())
     {
-      std::println("Scripts by Siv:");
-      for (auto script : *sivScripts)
-      {
-        std::println("{}", script->GetName());
-      }
+      std::println("{}", character);
     }
   }
 }

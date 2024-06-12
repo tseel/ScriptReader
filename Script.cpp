@@ -5,48 +5,46 @@
 #include <fstream>
 #include <ranges>
 
-Script::Script(const fs::path filename)
+Script::Script(const fs::path filename) : filename(filename)
 {
   nlohmann::json js = nlohmann::json::parse(std::ifstream{filename});
-  auto iter = js.cbegin();
-  if (js[0].is_object() && js[0].contains("id") && js[0]["id"] == "_meta")
-  {
-    nlohmann::json& meta = js[0];
-    name = meta.value("name", "");
-    author = meta.value("author", "");
-    image = meta.value("image", "");
-    ++iter;
-  }
 
-  if (name == "")
-  {
-    name = filename.stem().string();
-  }
-
-  for (; iter != js.cend(); ++iter)
+  for (const auto& entry : js)
   {
     std::string charId;
-    if (iter->is_object()) // old style / homebrew, character name is ID
+    if (entry.is_object() && entry.contains("id") && entry["id"] == "_meta")
+    {
+      name = entry.value("name", "");
+      author = entry.value("author", "");
+    }
+    else if (entry.is_object())
     {
       // use "name" key for homebrew, "id" key otherwise
-      if (iter->contains("name"))
+      if (entry.contains("name"))
       {
-        charId = (*iter)["name"];
+        charId = entry["name"];
+        scriptType = ScriptType::HOMEBREW;
       }
       else
       {
-        charId = (*iter)["id"];
-        oldFormat = true;
+        charId = entry["id"];
+        scriptType = ScriptType::OLD_FORMAT;
       }
     }
-    else if (iter->is_string())
+    else if (entry.is_string())
     {
-      charId = *iter;
+      charId = entry;
+      scriptType = ScriptType::NORMAL;
     }
 
     rng::replace(charId, '_', ' ');
     // TODO: convert charId to title case
     characters.push_back(charId);
+  }
+
+  if (name == "")
+  {
+    name = filename.stem().string();
   }
 }
 

@@ -13,20 +13,10 @@ class Script
       Script(const fs::path filename);
       void Print();
 
-      inline const std::string& GetName() const
-      {
-        return name;
-      }
-
-      inline const std::string& GetAuthor() const
-      {
-        return author;
-      }
-
-      inline const std::vector<std::string>& GetCharacters() const
-      {
-        return characters;
-      }
+      inline const fs::path& GetFilename() const;
+      inline const std::string& GetName() const;
+      inline const std::string& GetAuthor() const;
+      inline const std::vector<std::string>& GetCharacters() const;
 
       bool operator<(const Script rhs) const
       {
@@ -43,11 +33,41 @@ class Script
       }
 
     private:
+      fs::path filename;
       std::string name;
       std::string author;
       std::string image;
-      bool oldFormat;
       std::vector<std::string> characters;
+
+      enum class ScriptType
+      {
+        NORMAL,
+        OLD_FORMAT,
+        HOMEBREW
+      };
+
+      ScriptType scriptType;
 };
+
+inline const fs::path& Script::GetFilename() const
+{
+  return filename;
+}
+
+inline const std::string& Script::GetName() const
+{
+  return name;
+}
+
+inline const std::string& Script::GetAuthor() const
+{
+  return author;
+}
+
+inline const std::vector<std::string>& Script::GetCharacters() const
+{
+  return characters;
+}
+
 
 #endif
